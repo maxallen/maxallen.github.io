@@ -1,2 +1,2 @@
 # Max Allen
-This is a static site hosted on Github
+This is my personal website.
