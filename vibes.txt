@@ -719,4 +719,930 @@ blog/
 
         <div class="blog-post-navigation">
           <div class="blog-post-nav-links">
-            <a href="#" class="blog-post-prev" id="blog-
+            <a href="#" class="blog-post-prev" id="blog-post-prev">← Previous Post</a>
+            <a href="#" class="blog-post-next" id="blog-post-next">Next Post →</a>
+          </div>
+        </div>
+      </div>
+    </article>
+  </main>
+
+  <footer>
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-left">
+          <p>&copy; 2025 Your Name. All rights reserved.</p>
+        </div>
+        <div class="footer-right">
+          <div class="social-links">
+            <a href="#" aria-label="GitHub"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg></a>
+            <a href="#" aria-label="Twitter"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"></path></svg></a>
+            <a href="#" aria-label="LinkedIn"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script src="../js/main.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/4.2.12/marked.min.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Get the post filename from the URL (e.g., post1.html -> post1.md)
+      const pathParts = window.location.pathname.split('/');
+      const filename = pathParts[pathParts.length - 1].replace('.html', '.md');
+      
+      try {
+        // Fetch the Markdown file
+        const response = await fetch(`../blog/posts/${filename}`);
+        if (!response.ok) {
+          throw new Error('Post not found');
+        }
+        
+        const markdown = await response.text();
+        
+        // Parse frontmatter (simple implementation)
+        const frontmatterRegex = /^---\n([\s\S]*?)\n---\n/;
+        const frontmatterMatch = markdown.match(frontmatterRegex);
+        
+        let content = markdown;
+        let metadata = {};
+        
+        if (frontmatterMatch) {
+          // Extract and parse frontmatter
+          const frontmatter = frontmatterMatch[1];
+          frontmatter.split('\n').forEach(line => {
+            const [key, ...valueParts] = line.split(':');
+            if (key && valueParts.length) {
+              metadata[key.trim()] = valueParts.join(':').trim();
+            }
+          });
+          
+          // Remove frontmatter from content
+          content = markdown.replace(frontmatterRegex, '');
+        }
+        
+        // Update the page with metadata
+        document.title = (metadata.title || 'Blog Post') + ' - Your Name';
+        document.getElementById('blog-post-title').textContent = metadata.title || 'Blog Post';
+        document.getElementById('blog-post-date').textContent = metadata.date || '';
+        
+        // Handle tags if present
+        if (metadata.tags) {
+          const tagsContainer = document.getElementById('blog-post-tags');
+          const tags = metadata.tags.split(',').map(tag => tag.trim());
+          tagsContainer.innerHTML = tags.map(tag => `<span class="blog-tag">${tag}</span>`).join('');
+        }
+        
+        // Handle featured image if present
+        if (metadata.image) {
+          document.getElementById('blog-post-image').src = metadata.image;
+          document.getElementById('blog-post-image').alt = metadata.imageAlt || metadata.title || 'Blog Post Image';
+        }
+        
+        // Convert Markdown to HTML and insert into the page
+        const htmlContent = marked.parse(content);
+        document.getElementById('blog-post-content').innerHTML = htmlContent;
+        
+        // Apply syntax highlighting to code blocks
+        document.querySelectorAll('pre code').forEach(block => {
+          hljs.highlightBlock(block);
+        });
+        
+      } catch (error) {
+        console.error('Error loading blog post:', error);
+        document.getElementById('blog-post-content').innerHTML = `
+          <div class="error-message">
+            <h2>Error Loading Post</h2>
+            <p>The requested blog post could not be loaded. It may have been moved or deleted.</p>
+            <a href="../blog.html" class="btn primary">Back to Blog</a>
+          </div>
+        `;
+      }
+    });
+  </script>
+</body>
+</html>
+```
+
+# Sample Blog Post Files
+
+## blog/posts/post1.md
+```markdown
+---
+title: Getting Started with Modern Web Development
+date: May 1, 2025
+tags: Web Development, JavaScript, CSS
+image: https://via.placeholder.com/1600x900
+imageAlt: Modern web development tools illustration
+---
+
+# Getting Started with Modern Web Development
+
+Modern web development has evolved dramatically over the past decade. What was once a simple combination of HTML, CSS, and some JavaScript has transformed into a complex ecosystem of frameworks, build tools, and best practices. This post will guide you through the essentials of getting started in this exciting field.
+
+## The Core Technologies
+
+Before diving into frameworks and tools, it's important to have a solid understanding of the core web technologies:
+
+### HTML: The Structure
+
+HTML (HyperText Markup Language) provides the basic structure of sites. It's what you use to put text on a page, build forms, create links, etc. Modern HTML5 offers semantic elements like `<article>`, `<section>`, and `<nav>` that help create more meaningful page structures.
+
+```html
+<article>
+  <h2>Article Title</h2>
+  <p>This is a paragraph in an article.</p>
+</article>
+```
+
+### CSS: The Presentation
+
+CSS (Cascading Style Sheets) is used to style and layout web pages — for example, to alter the font, color, size, and spacing of your content, split it into multiple columns, or add animations and other decorative features.
+
+```css
+article {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+```
+
+### JavaScript: The Behavior
+
+JavaScript allows you to add interactivity to your website. It's a full-featured programming language that can create complex features on web pages.
+
+```javascript
+document.querySelector('article').addEventListener('click', function() {
+  console.log('Article was clicked!');
+});
+```
+
+## Modern Development Workflow
+
+Today's web development typically involves:
+
+1. **Package Managers** like npm or yarn to manage dependencies
+2. **Build Tools** like Webpack, Vite, or Parcel to bundle assets
+3. **CSS Preprocessors** like Sass or Less for more powerful styling
+4. **JavaScript Frameworks** like React, Vue, or Angular for building complex UIs
+5. **Static Site Generators** like Next.js, Gatsby, or Eleventy for content-focused sites
+
+## Getting Started: A Simple Project
+
+Let's set up a basic modern web project:
+
+1. Create a new directory for your project
+2. Initialize a new npm project:
+   ```bash
+   npm init -y
+   ```
+3. Install some basic dependencies:
+   ```bash
+   npm install --save-dev vite
+   ```
+4. Create an HTML file (index.html):
+   ```html
+   <!DOCTYPE html>
+   <html lang="en">
+   <head>
+     <meta charset="UTF-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     <title>My Modern Web Project</title>
+     <link rel="stylesheet" href="./style.css">
+   </head>
+   <body>
+     <div id="app">
+       <h1>Hello Modern Web!</h1>
+     </div>
+     <script type="module" src="./main.js"></script>
+   </body>
+   </html>
+   ```
+5. Add a script to package.json:
+   ```json
+   "scripts": {
+     "dev": "vite",
+     "build": "vite build"
+   }
+   ```
+
+## Conclusion
+
+Modern web development may seem overwhelming at first, but with a methodical approach and focus on fundamentals, you can gradually build your expertise. Start small, experiment often, and don't be afraid to learn from your mistakes.
+
+In future posts, we'll dive deeper into specific aspects of modern web development and explore more advanced topics. Stay tuned!
+```
+
+## blog/posts/post2.md
+```markdown
+---
+title: The Art of Thoughtful UI Design
+date: April 15, 2025
+tags: UI Design, UX, Design Principles
+image: https://via.placeholder.com/1600x900
+imageAlt: UI design elements on a digital canvas
+---
+
+# The Art of Thoughtful UI Design
+
+Good UI design isn't just about making interfaces that look pretty—it's about creating experiences that feel intuitive and effortless. In this post, I'll share some fundamental principles that guide thoughtful UI design and help create interfaces that users love.
+
+## Design with Purpose
+
+Every element in your interface should have a clear purpose. Before adding any button, text field, or decorative element, ask yourself:
+
+- Why does this element need to exist?
+- What job does it perform for the user?
+- How does it contribute to the overall user experience?
+
+This ruthless questioning helps prevent interface bloat and keeps your design focused on what truly matters.
+
+## Create Clear Visual Hierarchies
+
+Effective UI design guides users' attention to the most important elements first. We achieve this through visual hierarchy:
+
+1. **Size**: Larger elements draw more attention
+2. **Color**: High-contrast and saturated colors stand out
+3. **Position**: Elements higher in the layout are seen first
+4. **Spacing**: Strategic white space isolates and emphasizes elements
+
+Consider this example of a well-structured heading hierarchy:
+
+```css
+h1 {
+  font-size: 2.5rem;
+  margin-bottom: 1.5rem;
+  color: #222;
+}
+
+h2 {
+  font-size: 1.8rem;
+  margin-bottom: 1rem;
+  color: #444;
+}
+
+h3 {
+  font-size: 1.4rem;
+  margin-bottom: 0.75rem;
+  color: #666;
+}
+```
+
+## Maintain Consistency
+
+Consistency creates comfort and predictability. Users quickly learn interface patterns, so keeping these patterns consistent reduces cognitive load.
+
+This applies to:
+- Visual styles (colors, typography, shadows)
+- Interactive behaviors (how buttons respond to clicks)
+- Language and terminology
+- Layout patterns across similar screens
+
+## Design for Different Contexts
+
+Thoughtful UI design anticipates various user contexts:
+
+- **Devices**: How does your interface adapt between desktop, tablet, and mobile?
+- **Environments**: Will your app be used outdoors in bright sunlight? In dark rooms?
+- **User States**: How does your interface handle first-time users vs. experienced ones?
+- **Accessibility**: How usable is your design for people with different abilities?
+
+## Focus on Microinteractions
+
+Small details often make the biggest impression. Microinteractions—like button hover states, loading animations, or form validation feedback—significantly impact how users feel about your interface.
+
+```css
+.button {
+  background-color: #3366ff;
+  transition: all 0.2s ease;
+}
+
+.button:hover {
+  background-color: #2255ee;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+```
+
+## Test with Real Users
+
+Finally, the most thoughtful UI designs are those that have been validated through user testing. Observing real people interact with your interface often reveals insights no amount of theory can provide.
+
+Simple testing methods include:
+- Usability sessions with 5-7 participants
+- A/B testing of different designs
+- Analytics tracking of user behavior
+- Heatmap analysis of user attention
+
+## Conclusion
+
+Thoughtful UI design requires balancing aesthetics with usability, consistency with innovation, and simplicity with functionality. By focusing on purpose, hierarchy, consistency, context, microinteractions, and user testing, you can create interfaces that not only look good but truly enhance the user experience.
+
+In the next post, we'll explore specific techniques for implementing these principles in your design process.
+```
+
+# CSS Files
+
+## css/styles.css
+```css
+/* Base Styles & Variables */
+:root {
+  --color-text: #333333;
+  --color-text-light: #666666;
+  --color-background: #ffffff;
+  --color-primary: #c8102e; /* China Red */
+  --color-secondary: #007acc;
+  --color-accent: #ffcc00;
+  --color-border: #e6e6e6;
+  --color-card-bg: #f9f9f9;
+  
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  --font-size-base: 1rem;
+  --font-size-sm: 0.875rem;
+  --font-size-lg: 1.125rem;
+  --font-size-xl: 1.25rem;
+  --font-size-2xl: 1.5rem;
+  --font-size-3xl: 2rem;
+  --font-size-4xl: 2.5rem;
+  
+  --spacing-xs: 0.25rem;
+  --spacing-sm: 0.5rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  --spacing-2xl: 3rem;
+  --spacing-3xl: 4rem;
+  
+  --border-radius-sm: 4px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  
+  --transition-fast: 0.15s ease;
+  --transition-base: 0.3s ease;
+  --transition-slow: 0.5s ease;
+  
+  --container-width: 1200px;
+  --header-height: 70px;
+}
+
+/* Reset & Base Styles */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-family);
+  font-size: var(--font-size-base);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-background);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+a {
+  color: var(--color-secondary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: var(--color-primary);
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 600;
+  line-height: 1.3;
+  margin-bottom: var(--spacing-md);
+}
+
+h1 {
+  font-size: var(--font-size-4xl);
+}
+
+h2 {
+  font-size: var(--font-size-3xl);
+}
+
+h3 {
+  font-size: var(--font-size-2xl);
+}
+
+p {
+  margin-bottom: var(--spacing-md);
+}
+
+ul, ol {
+  padding-left: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
+}
+
+/* Container */
+.container {
+  width: 100%;
+  max-width: var(--container-width);
+  margin: 0 auto;
+  padding: 0 var(--spacing-lg);
+}
+
+/* Header & Navigation */
+header {
+  background-color: var(--color-background);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 100;
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+}
+
+header .container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: var(--font-size-xl);
+  font-weight: 700;
+  color: #333333; /* off-black as requested */
+  text-decoration: none;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+nav ul li {
+  margin-left: var(--spacing-lg);
+}
+
+nav ul li a {
+  color: var(--color-text);
+  font-weight: 500;
+  text-decoration: none;
+  position: relative;
+  padding-bottom: var(--spacing-xs);
+}
+
+nav ul li a::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background-color: var(--color-primary);
+  transition: width var(--transition-base);
+}
+
+nav ul li a:hover::after,
+nav ul li a.active::after {
+  width: 100%;
+}
+
+.menu-toggle {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+}
+
+.bar {
+  width: 25px;
+  height: 3px;
+  background-color: var(--color-text);
+  margin: 3px 0;
+  transition: var(--transition-fast);
+}
+
+/* Hero Section */
+.hero {
+  padding: var(--spacing-3xl) 0;
+  background-color: var(--color-background);
+  text-align: left;
+}
+
+.hero h1 {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  margin-bottom: var(--spacing-lg);
+  line-height: 1.2;
+}
+
+.china-red {
+  color: var(--color-primary);
+}
+
+.highlight {
+  position: relative;
+  display: inline-block;
+}
+
+.highlight::after {
+  content: '';
+  position: absolute;
+  bottom: 5%;
+  left: -2%;
+  width: 104%;
+  height: 15px;
+  background-color: rgba(255, 204, 0, 0.3);
+  z-index: -1;
+}
+
+.hero-subtitle {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-xl);
+}
+
+.hero-buttons {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  padding: var(--spacing-sm) var(--spacing-lg);
+  border-radius: var(--border-radius-md);
+  font-weight: 500;
+  text-align: center;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-decoration: none;
+}
+
+.btn.primary {
+  background-color: var(--color-primary);
+  color: white;
+  border: 2px solid var(--color-primary);
+}
+
+.btn.primary:hover {
+  background-color: transparent;
+  color: var(--color-primary);
+}
+
+.btn.secondary {
+  background-color: var(--color-secondary);
+  color: white;
+  border: 2px solid var(--color-secondary);
+}
+
+.btn.secondary:hover {
+  background-color: transparent;
+  color: var(--color-secondary);
+}
+
+.btn.outline {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 2px solid var(--color-border);
+}
+
+.btn.outline:hover {
+  border-color: var(--color-text);
+}
+
+/* Featured Section */
+.featured {
+  padding: var(--spacing-3xl) 0;
+  background-color: var(--color-card-bg);
+}
+
+.featured h2 {
+  text-align: center;
+  margin-bottom: var(--spacing-2xl);
+}
+
+.featured-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.featured-item {
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform var(--transition-base), box-shadow var(--transition-base);
+}
+
+.featured-item:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.featured-item img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.featured-item h3 {
+  padding: var(--spacing-md) var(--spacing-md) var(--spacing-sm);
+  font-size: var(--font-size-lg);
+}
+
+.featured-item p {
+  padding: 0 var(--spacing-md);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-md);
+}
+
+.read-more {
+  display: inline-block;
+  padding: 0 var(--spacing-md) var(--spacing-md);
+  font-weight: 500;
+  color: var(--color-secondary);
+}
+
+.read-more:hover {
+  color: var(--color-primary);
+}
+
+/* About Page */
+.about-hero {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-2xl) 0;
+  text-align: center;
+}
+
+.about-content {
+  padding: var(--spacing-2xl) 0;
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr;
+  gap: var(--spacing-2xl);
+}
+
+.about-image img {
+  width: 100%;
+  border-radius: var(--border-radius-lg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+}
+
+.about-text h2 {
+  margin-bottom: var(--spacing-md);
+}
+
+.about-text .lead {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-light);
+  margin-bottom: var(--spacing-lg);
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-lg);
+}
+
+.skill-tag {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.contact-links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+}
+
+.contact-link {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+  color: var(--color-text);
+}
+
+.contact-link:hover {
+  color: var(--color-primary);
+}
+
+/* Projects Page */
+.projects-hero {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-2xl) 0;
+  text-align: center;
+}
+
+.projects-showcase {
+  padding: var(--spacing-2xl) 0;
+}
+
+.project-card {
+  margin-bottom: var(--spacing-3xl);
+  border-radius: var(--border-radius-lg);
+  overflow: hidden;
+  background-color: var(--color-background);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+}
+
+.project-image img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.project-content {
+  padding: var(--spacing-xl);
+}
+
+.project-title {
+  margin-bottom: var(--spacing-sm);
+}
+
+.project-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+}
+
+.project-tag {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+}
+
+.project-description {
+  margin-bottom: var(--spacing-lg);
+}
+
+.project-links {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+/* Reading List Page */
+.reading-hero {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-2xl) 0;
+  text-align: center;
+}
+
+.reading-content {
+  padding: var(--spacing-2xl) 0;
+}
+
+.reading-categories {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-xl);
+}
+
+.category-button {
+  background-color: transparent;
+  border: 1px solid var(--color-border);
+  padding: var(--spacing-xs) var(--spacing-md);
+  border-radius: var(--border-radius-md);
+  cursor: pointer;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.category-button:hover, 
+.category-button.active {
+  background-color: var(--color-primary);
+  color: white;
+  border-color: var(--color-primary);
+}
+
+.books-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: var(--spacing-xl);
+}
+
+.book-card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-background);
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transition: transform var(--transition-base);
+}
+
+.book-card:hover {
+  transform: translateY(-5px);
+}
+
+.book-cover {
+  height: 300px;
+  overflow: hidden;
+}
+
+.book-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.book-card:hover .book-cover img {
+  transform: scale(1.05);
+}
+
+.book-info {
+  padding: var(--spacing-md);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.book-info h3 {
+  font-size: var(--font-size-lg);
+  margin-bottom: var(--spacing-xs);
+}
+
+.book-author {
+  color: var(--color-text-light);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-sm);
+}
+
+.book-description {
+  margin-bottom: var(--spacing-md);
+  flex-grow: 1;
+}
+
+.book-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+}
+
+.book-tag {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--border-radius-sm);
+  font-size: var(--font-size-sm);
+}
+
+/* Footer */
+footer {
+  background-color: var(--color-card-bg);
+  padding: var(--spacing-xl) 0;
+  margin-top: auto;
+}
+
+.footer-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.social-links {
+  display: flex;
+  gap: var(--spacing-md);
+}
+
+.social-links a {
+  color: var(
