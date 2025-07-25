@@ -1,9 +1,6 @@
----
-title: "Getting Started with Modern JavaScript"
-date: "2024-01-01"
-author: "Max Allen"
-tags: ["JavaScript", "Web Development", "Tutorial"]
----
+[title: "Getting Started with Modern JavaScript"]: # 
+[date: "2024-01-01"]: # 
+[author: "Max Allen"]: # 
 
 # Getting Started with Modern JavaScript
 
