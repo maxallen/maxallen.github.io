@@ -156,11 +156,83 @@
     geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
     geometry.computeVertexNormals();
 
-    // Material
-    const material = new THREE.MeshPhongMaterial({
-      color: 0x888888,
-      specular: 0x222222,
-      shininess: 100,
+    // Create a more pronounced texture
+    const canvas = document.createElement('canvas');
+    canvas.width = 512;
+    canvas.height = 512;
+    const ctx = canvas.getContext('2d');
+    
+    // Create a brushed metal texture
+    ctx.fillStyle = '#808080';
+    ctx.fillRect(0, 0, 512, 512);
+    
+    // Add directional scratches/brushed effect
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < 512; i += 2) {
+      ctx.beginPath();
+      ctx.moveTo(0, i + Math.random() * 2);
+      ctx.lineTo(512, i + Math.random() * 2);
+      ctx.stroke();
+    }
+    
+    // Add darker scratches
+    ctx.strokeStyle = 'rgba(0, 0, 0, 0.1)';
+    for (let i = 0; i < 512; i += 3) {
+      ctx.beginPath();
+      ctx.moveTo(0, i + Math.random() * 3);
+      ctx.lineTo(512, i + Math.random() * 3);
+      ctx.stroke();
+    }
+    
+    // Add some spots and imperfections
+    for (let i = 0; i < 50; i++) {
+      const x = Math.random() * 512;
+      const y = Math.random() * 512;
+      const radius = Math.random() * 3 + 1;
+      const opacity = Math.random() * 0.2;
+      ctx.fillStyle = `rgba(0, 0, 0, ${opacity})`;
+      ctx.beginPath();
+      ctx.arc(x, y, radius, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    
+    const texture = new THREE.CanvasTexture(canvas);
+    texture.needsUpdate = true;
+
+    // Create normal map for depth
+    const normalCanvas = document.createElement('canvas');
+    normalCanvas.width = 512;
+    normalCanvas.height = 512;
+    const normalCtx = normalCanvas.getContext('2d');
+    
+    // Generate normal map from height variations
+    normalCtx.fillStyle = '#8080ff';
+    normalCtx.fillRect(0, 0, 512, 512);
+    
+    // Add variations to normal map
+    for (let i = 0; i < 100; i++) {
+      const x = Math.random() * 512;
+      const y = Math.random() * 512;
+      const size = Math.random() * 20 + 5;
+      const gradient = normalCtx.createRadialGradient(x, y, 0, x, y, size);
+      gradient.addColorStop(0, '#a0a0ff');
+      gradient.addColorStop(1, '#8080ff');
+      normalCtx.fillStyle = gradient;
+      normalCtx.fillRect(x - size, y - size, size * 2, size * 2);
+    }
+    
+    const normalMap = new THREE.CanvasTexture(normalCanvas);
+    normalMap.needsUpdate = true;
+
+    // Material with enhanced properties
+    const material = new THREE.MeshStandardMaterial({
+      color: 0x909090,
+      map: texture,
+      normalMap: normalMap,
+      normalScale: new THREE.Vector2(0.5, 0.5),
+      metalness: 0.7,
+      roughness: 0.3,
       flatShading: true,
       side: THREE.DoubleSide
     });
@@ -169,13 +241,22 @@
     const stellatedDodecahedron = new THREE.Mesh(geometry, material);
     scene.add(stellatedDodecahedron);
 
-    // Lighting
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+    // Enhanced lighting for better texture visibility
+    const ambientLight = new THREE.AmbientLight(0xffffff, 0.4);
     scene.add(ambientLight);
 
-    const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
-    directionalLight.position.set(1, 1, 0.5);
-    scene.add(directionalLight);
+    const directionalLight1 = new THREE.DirectionalLight(0xffffff, 0.8);
+    directionalLight1.position.set(1, 1, 0.5);
+    scene.add(directionalLight1);
+    
+    const directionalLight2 = new THREE.DirectionalLight(0xffffff, 0.4);
+    directionalLight2.position.set(-1, -0.5, -1);
+    scene.add(directionalLight2);
+    
+    // Add a point light for highlights
+    const pointLight = new THREE.PointLight(0xffffff, 0.5);
+    pointLight.position.set(0, 2, 2);
+    scene.add(pointLight);
 
     // Mouse interaction variables
     let isDragging = false;
