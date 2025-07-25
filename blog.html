@@ -311,7 +311,10 @@
         linkElement.classList.add('active');
 
         // Fetch and render the markdown
-        const response = await fetch(`blog/posts/${filename}`);
+        const response = await fetch(`./blog/posts/${filename}`);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const markdown = await response.text();
         
         // Configure marked options for Notion-like rendering
@@ -330,7 +333,13 @@
         console.error('Error loading post:', error);
         blogContent.innerHTML = `
           <div class="blog-post">
-            <p style="color: #cc0000;">Error loading post. Please try again.</p>
+            <p style="color: #cc0000;">Error loading post: ${error.message}</p>
+            <p style="color: #666; margin-top: 10px;">Note: If you're viewing this file locally (file:// protocol), the blog posts won't load due to CORS restrictions. Please either:</p>
+            <ul style="color: #666;">
+              <li>Use a local web server (e.g., <code>python3 -m http.server</code>)</li>
+              <li>Deploy to GitHub Pages</li>
+              <li>Open in a web server environment</li>
+            </ul>
           </div>
         `;
       }
