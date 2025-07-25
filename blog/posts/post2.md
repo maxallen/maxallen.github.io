@@ -1,9 +1,6 @@
----
-title: "Building a Responsive Web Design System"
-date: "2024-01-15"
-author: "Max Allen"
-tags: ["CSS", "Web Design", "Responsive Design"]
----
+[title: "Building a Responsive Web Design System"]: # 
+[date: "2024-01-15"]: # 
+[author: "Max Allen"]: # 
 
 # Building a Responsive Web Design System
 
