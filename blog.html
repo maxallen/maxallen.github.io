@@ -326,7 +326,7 @@
         });
 
         const html = marked.parse(markdown);
-        blogContent.innerHTML = `<div class="blog-post">${html}</div>`;
+        blogContent.innerHTML = html;
         
         currentPost = filename;
       } catch (error) {
