@@ -177,12 +177,78 @@
     directionalLight.position.set(1, 1, 0.5);
     scene.add(directionalLight);
 
+    // Mouse interaction variables
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+    let autoRotate = true;
+
+    // Mouse event handlers
+    renderer.domElement.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+      autoRotate = false;
+    });
+
+    renderer.domElement.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+
+      const deltaMove = {
+        x: e.clientX - previousMousePosition.x,
+        y: e.clientY - previousMousePosition.y
+      };
+
+      stellatedDodecahedron.rotation.y += deltaMove.x * 0.005;
+      stellatedDodecahedron.rotation.x += deltaMove.y * 0.005;
+
+      previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    renderer.domElement.addEventListener('mouseup', () => {
+      isDragging = false;
+      autoRotate = true;
+    });
+
+    renderer.domElement.addEventListener('mouseleave', () => {
+      isDragging = false;
+    });
+
+    // Touch event handlers for mobile
+    renderer.domElement.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        autoRotate = false;
+      }
+    });
+
+    renderer.domElement.addEventListener('touchmove', (e) => {
+      if (!isDragging || e.touches.length !== 1) return;
+
+      const deltaMove = {
+        x: e.touches[0].clientX - previousMousePosition.x,
+        y: e.touches[0].clientY - previousMousePosition.y
+      };
+
+      stellatedDodecahedron.rotation.y += deltaMove.x * 0.005;
+      stellatedDodecahedron.rotation.x += deltaMove.y * 0.005;
+
+      previousMousePosition = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+    });
+
+    renderer.domElement.addEventListener('touchend', () => {
+      isDragging = false;
+      autoRotate = true;
+    });
+
     // Animation
     function animate() {
       requestAnimationFrame(animate);
       
-      stellatedDodecahedron.rotation.x += 0.003;
-      stellatedDodecahedron.rotation.y += 0.005;
+      // Auto-rotate when not dragging
+      if (autoRotate) {
+        stellatedDodecahedron.rotation.x += 0.003;
+        stellatedDodecahedron.rotation.y += 0.005;
+      }
       
       renderer.render(scene, camera);
     }
@@ -193,6 +259,7 @@
       camera.updateProjectionMatrix();
       renderer.setSize(window.innerWidth, window.innerHeight);
     });
+
 
     animate();
   </script>
