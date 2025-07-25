@@ -30,6 +30,7 @@
       background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(10px);
       z-index: 100;
+      border-bottom: 1px solid #e5e5e5;
     }
 
     .logo {
@@ -77,7 +78,7 @@
     scene.background = new THREE.Color(0xffffff);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    camera.position.z = 5;
+    camera.position.z = 7;
 
     const renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -133,7 +134,7 @@
       center.divideScalar(face.length);
 
       // Extend center point outward to create stellations
-      const extendedCenter = center.clone().multiplyScalar(2.2);
+      const extendedCenter = center.clone().multiplyScalar(1.8);
 
       // Create triangular faces from pentagram
       for (let i = 0; i < face.length; i++) {
@@ -157,13 +158,11 @@
 
     // Material
     const material = new THREE.MeshPhongMaterial({
-      color: 0x4444ff,
+      color: 0x888888,
       specular: 0x222222,
       shininess: 100,
       flatShading: true,
-      side: THREE.DoubleSide,
-      transparent: true,
-      opacity: 0.9
+      side: THREE.DoubleSide
     });
 
     // Create mesh
