@@ -77,4 +77,4 @@ We’re entering an era where applications can build their own content, update t
 
 This unlocks a new kind of product. One that adapts. One that grows with its users. One that constructs itself.
 
-If you’re building in this space—or just intrigued by the possibilities—I’d love to hear your thoughts. Where do you see this going? What excites you or worries you about this trend? Feel free to reply or forward this to someone who should be part of the conversation.
+If you’re building in this space, or just intrigued by the possibilities, I’d love to hear your thoughts. Where do you see this going? What excites you or worries you about this trend? Feel free to message me at max [at] maxallen [dot] dev or forward this to someone who should be part of the conversation.

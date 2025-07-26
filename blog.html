@@ -169,7 +169,8 @@
       display: block;
     }
 
-    .blog-post ul, .blog-post ol {
+    .blog-post ul,
+    .blog-post ol {
       margin-bottom: 16px;
       padding-left: 24px;
     }
@@ -277,8 +278,7 @@
   <script>
     // Available blog posts
     const posts = [
-      { title: 'Getting Started with Modern JavaScript', file: 'post1.md' },
-      { title: 'Building a Responsive Web Design System', file: 'post2.md' }
+      { title: 'Self-Constructing Applications', file: 'self-constructing-applications.md' },
     ];
 
     // Initialize
@@ -316,7 +316,7 @@
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         const markdown = await response.text();
-        
+
         // Configure marked options for Notion-like rendering
         marked.setOptions({
           breaks: true,
@@ -327,7 +327,7 @@
 
         const html = marked.parse(markdown);
         blogContent.innerHTML = html;
-        
+
         currentPost = filename;
       } catch (error) {
         console.error('Error loading post:', error);
